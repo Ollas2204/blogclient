@@ -15,10 +15,8 @@
               </h3>
             <h4>{{article.title}}</h4>
             <p class="left-align light">{{article.content}}</p>
-            <div class="row" v-if="article.authorId._id == idUser">
-              <div @click="openModal()" class="center waves-effect waves-light btn-small">Edit Blog </div>
-              <div @click="edit()" class="center waves-effect waves-light btn-small">Delete Blog </div>
-            </div>
+            <div @click="openModal(article)" class="center waves-effect waves-light btn-small">Edit Blog </div>
+            <div @click="edit()" class="center waves-effect waves-light btn-small">Delete Blog </div>
           </div>
 
           <div class="col s12 m4">
@@ -26,7 +24,9 @@
               <h5 class="center">List Comment</h5>
               <div class="row" v-for="comment in article.comments" :key="comment._id">
                 <div class="input-field col s12">
-                  <p class="light">{{comment.body}} by <b>{{comment.authorName}}</b> {{JSON.stringify(article.createdAt)}}</p>
+                  <p class="light"> <b>{{comment.body}}</b> </p>
+                  <p>by: <b>{{comment.authorName == 'undefined'? 'not Logged in user': comment.authorName }}</b></p>
+                  <pre>at: {{JSON.stringify(article.createdAt).slice(0, 11)}}, {{JSON.stringify(article.createdAt).slice(12, 20)}}"</pre>
                 </div>
               </div>
               <div class="row">
@@ -77,7 +77,8 @@ export default {
     ...mapState([
       'token',
       'idUser',
-      'articles'
+      'articles',
+      'nameUser'
     ])
   },
   created() {
@@ -91,17 +92,18 @@ export default {
     }
   },
   mounted() {
-    this.article = this.articles.filter(e => e._id === this.$route.params.id)[0]
-    this.title = this.article.title
-    this.content = this.article.content
+    // this.article = this.articles.filter(e => e._id === this.$route.params.id)[0]
+    // this.title = this.article.title
+    // this.content = this.article.content
   },
   methods: {
     ...mapActions([
       'login',
       'get_data'
     ]),
-    openModal() {
-      $('#modal2').modal('open');
+    openModal(article) {
+      this.$store.dispatch('editArticle', article)
+      this.$router.push(`edit/${article._id}`)
     },
     edit(bool) {
       let self = this
@@ -134,13 +136,17 @@ export default {
     createComment() {
       let self = this
       this.$axios.put(`articles/${this.$route.params.id}/comment`, {
+          commentator: this.nameUser,
           body: this.newComment
         }, {
           headers: {
             name: this.nameUser
           }
         })
-        .then(() => self.get_data())
+        .then(() => {
+          self.newComment = ''
+          self.get_data()
+        })
         .catch(err => alert(JSON.stringify(err)))
     }
   }

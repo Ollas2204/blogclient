@@ -113,7 +113,7 @@ export default {
         password: this.passwordLog
       })
         .then(() => null)
-        .catch(err => alert(JSON.stringify(err)))
+        .catch(err => console.log(err))
       this.emailLog = ''
       this.passwordLog = ''
     },

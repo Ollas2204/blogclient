@@ -79,7 +79,7 @@ export default {
             $('#modal1').modal('close');
             self.get_data()
           })
-          .catch(err => alert(JSON.stringify(err)))
+          .catch(err => console.log(err))
         this.title = ''
         this.content = ''
       } else {

@@ -10,9 +10,14 @@ export default new Vuex.Store({
     token: localStorage.getItem('token'),
     idUser: localStorage.getItem('idUser'),
     nameUser: localStorage.getItem('nameUser'),
-    articles: []
+    articles: [],
+    editArticle: null
   },
-  mutations: {},
+  mutations: {
+    editData: function (state, wantToEdit) {
+      state.editArticle = wantToEdit
+    }
+  },
   actions: {
     login: function ({ commit, state }, payload) {
       axios.post(`${BASE_URL}/authors/signin`, {
@@ -43,6 +48,10 @@ export default new Vuex.Store({
         .catch(err => {
           alert(JSON.stringify(err))
         })
+    },
+    editArticle: function ({ commit }, payload) {
+      console.log('hitted');
+      commit('editData', payload)
     }
   }
 })
